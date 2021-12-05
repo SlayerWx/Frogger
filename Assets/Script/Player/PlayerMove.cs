@@ -24,19 +24,19 @@ public class PlayerMove : MonoBehaviour
     {
         if (!moving)
         {
-            if (Input.GetAxis("Horizontal") < 0)
+            if (Input.GetAxisRaw("Horizontal") < 0)
             {
                 StartCoroutine(MoveToDirection(Vector3.left, AnimationState.left));
             }
-            if (Input.GetAxis("Horizontal") > 0)
+            if (Input.GetAxisRaw("Horizontal") > 0)
             {
                 StartCoroutine(MoveToDirection(Vector3.right, AnimationState.right));
             }
-            if (Input.GetAxis("Vertical") < 0)
+            if (Input.GetAxisRaw("Vertical") < 0)
             {
                 StartCoroutine(MoveToDirection(Vector3.down, AnimationState.back));
             }
-            if (Input.GetAxis("Vertical") > 0)
+            if (Input.GetAxisRaw("Vertical") > 0)
             {
                 StartCoroutine(MoveToDirection(Vector3.up,AnimationState.front));
             }
