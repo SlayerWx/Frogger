@@ -9,6 +9,8 @@ public class PlayerMove : MonoBehaviour
     private bool dead = false;
     public float speed = 1.0f;
     public float distance = 1.0f;
+    public LayerMask obstacleCollision;
+    public Vector3 offsetRaycast = Vector3.zero;
     void Start()
     {
         dead = false;
@@ -26,19 +28,23 @@ public class PlayerMove : MonoBehaviour
         {
             if (Input.GetAxisRaw("Horizontal") < 0)
             {
-                StartCoroutine(MoveToDirection(Vector3.left, AnimationState.left));
+                if (CheckNotCollision(Vector2.left))
+                    StartCoroutine(MoveToDirection(Vector3.left, AnimationState.left));
             }
             if (Input.GetAxisRaw("Horizontal") > 0)
             {
-                StartCoroutine(MoveToDirection(Vector3.right, AnimationState.right));
+                if (CheckNotCollision(Vector2.right))
+                    StartCoroutine(MoveToDirection(Vector3.right, AnimationState.right));
             }
             if (Input.GetAxisRaw("Vertical") < 0)
             {
-                StartCoroutine(MoveToDirection(Vector3.down, AnimationState.back));
+                if (CheckNotCollision(Vector2.down))
+                    StartCoroutine(MoveToDirection(Vector3.down, AnimationState.back));
             }
             if (Input.GetAxisRaw("Vertical") > 0)
             {
-                StartCoroutine(MoveToDirection(Vector3.up,AnimationState.front));
+                if (CheckNotCollision(Vector2.up))
+                    StartCoroutine(MoveToDirection(Vector3.up,AnimationState.front));
             }
         }
     }
@@ -60,5 +66,9 @@ public class PlayerMove : MonoBehaviour
             transform.position = Vector2.Lerp(startPosition, startPosition + (direction * distance), timer / distance);
         }
         OnMove?.Invoke(AnimationState.idle);
+    }
+    bool CheckNotCollision(Vector2 direction)
+    {
+        return !(Physics2D.Raycast(transform.position + offsetRaycast, direction, distance, obstacleCollision));
     }
 }

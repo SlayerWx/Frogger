@@ -8182,6 +8182,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 8
   distance: 1
+  obstacleCollision:
+    serializedVersion: 2
+    m_Bits: 256
+  offsetRaycast: {x: 0, y: -0.25, z: 0}
 --- !u!114 &974735782
 MonoBehaviour:
   m_ObjectHideFlags: 0
