@@ -14,7 +14,7 @@ public class WaterEntry : MonoBehaviour
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.gameObject.transform.position.y > transform.position.y)
-        {
+        { 
             collision.GetComponent<PlayerMove>().inWaterFloor = EntryInWaterUp;
         }
         else if(collision.gameObject.transform.position.y < transform.position.y)

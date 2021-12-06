@@ -22,6 +22,7 @@ public class PlayerMove : MonoBehaviour
     public float restartLevelWait = 1.0f;
     public static Action<int> OnLifeChange;
     public bool inPause;
+    public int waterLogicMask = 11;
     void Start()
     {
         needCheckerAlive = false;
@@ -107,11 +108,11 @@ public class PlayerMove : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(inWaterFloor)
+        if(inWaterFloor && collision.gameObject.layer != waterLogicMask)
         {
             safePlatform = collision.transform;
         }
-        if(!inWaterFloor)
+        if(!inWaterFloor && collision.gameObject.layer != waterLogicMask)
         {
             if (!dead) StartCoroutine(RestartForLife());
             dead = true;
@@ -130,6 +131,8 @@ public class PlayerMove : MonoBehaviour
         lifes--;
         OnLifeChange?.Invoke(lifes);
         transform.position = startPosition;
-        if(lifes > 0)dead = false;
+        yield return null;
+        inWaterFloor = false;
+        if (lifes > 0)dead = false;
     }
 }
