@@ -8,6 +8,7 @@ public class SceneChanger : MonoBehaviour
     public void StartGame()
     {
         LevelManager.lvl = 1;
+        UIPoints.points = 0;
         SceneManager.LoadScene(nextSceneName);
     }
     public void ChangeScene()
