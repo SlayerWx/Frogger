@@ -11,10 +11,22 @@ public class PlayerMove : MonoBehaviour
     public float distance = 1.0f;
     public LayerMask obstacleCollision;
     public Vector3 offsetRaycast = Vector3.zero;
+    public bool inWaterFloor;
+    public Transform safePlatform;
+    public LayerMask platformLayer;
+    bool needCheckerAlive = false;
+    public Vector3 offsetPlatform;
+    public Vector3 startPosition;
+    public int lifes = 3;
+    public float restartLevelWait = 1.0f;
     void Start()
     {
+        needCheckerAlive = false;
+        safePlatform = null;
+        inWaterFloor = false;
         dead = false;
         moving = false;
+        startPosition = transform.position;
     }
 
     // Update is called once per frame
@@ -24,8 +36,12 @@ public class PlayerMove : MonoBehaviour
     }
     void PlayerInput()
     {
-        if (!moving)
+        if (!moving && !dead && !needCheckerAlive)
         {
+            if(safePlatform)
+            {
+                transform.position = safePlatform.position + offsetPlatform;
+            }
             if (Input.GetAxisRaw("Horizontal") < 0)
             {
                 if (CheckNotCollision(Vector2.left))
@@ -46,12 +62,15 @@ public class PlayerMove : MonoBehaviour
                 if (CheckNotCollision(Vector2.up))
                     StartCoroutine(MoveToDirection(Vector3.up,AnimationState.front));
             }
+        
         }
     }
     IEnumerator MoveToDirection(Vector3 direction, AnimationState newANim)
     {
+        safePlatform = null;
         float timer = 0.0f;
         moving = true;
+        needCheckerAlive = true;
         OnMove?.Invoke(newANim);
         Vector3 startPosition = transform.position;
         while (moving)
@@ -66,9 +85,45 @@ public class PlayerMove : MonoBehaviour
             transform.position = Vector2.Lerp(startPosition, startPosition + (direction * distance), timer / distance);
         }
         OnMove?.Invoke(AnimationState.idle);
+        AliveCheck();
     }
     bool CheckNotCollision(Vector2 direction)
     {
         return !(Physics2D.Raycast(transform.position + offsetRaycast, direction, distance, obstacleCollision));
+    }
+    void AliveCheck()
+    {
+        if(inWaterFloor && !safePlatform)
+        {
+            dead = true;
+            StartCoroutine(RestartForLife());
+        }
+        needCheckerAlive = false;
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(inWaterFloor)
+        {
+            safePlatform = collision.transform;
+        }
+        if(!inWaterFloor)
+        {
+            dead = true;
+            StartCoroutine(RestartForLife());
+        }
+    }
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if(inWaterFloor && safePlatform)
+        {
+            safePlatform = null;
+        }    
+    }
+    IEnumerator RestartForLife()
+    {
+        yield return new WaitForSeconds(restartLevelWait);
+        lifes++;
+        transform.position = startPosition;
+        if(lifes > 0)dead = false;
     }
 }
