@@ -26,9 +26,6 @@ public class LevelManager : MonoBehaviour
         WinCondition.OnPlayerWin+= WinCheck;
         Time.timeScale = 1.0f;
         pause = false;
-        if(lvl == 1)
-        {
-        }
     }
     private void OnDisable()
     {
