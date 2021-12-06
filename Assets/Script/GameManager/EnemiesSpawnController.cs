@@ -15,10 +15,19 @@ public class EnemiesSpawnController : MonoBehaviour
     private int lastGround = -1;
     private int lastWater = -1;
     public bool playing = true;
+    public float substractDifLvl1 = 0.5f;
+    public float substractDifLvl2 = 0.35f;
+    public float substractDifLvl3 = 0.23f;
     IEnumerator Start()
     {
         yield return new WaitForSecondsRealtime(timeToStartGame);
-        while(playing)
+        if (LevelManager.lvl == 1)
+            timeForDistance = substractDifLvl1;
+        if (LevelManager.lvl == 2)
+            timeForDistance = substractDifLvl2;
+        if (LevelManager.lvl == 3)
+            timeForDistance = substractDifLvl3;
+        while (playing)
         {
             ActiveObstacle(groundPool, leftGroundSpawner, rightGroundSpawner,ref lastGround);
             ActiveObstacle(waterPool, leftWaterSpawner, rightWaterSpawner,ref lastWater);
@@ -37,11 +46,13 @@ public class EnemiesSpawnController : MonoBehaviour
                 {
                     obj.gm.transform.position = right[GetIndex(ref last,right.Length)].position;
                     obj.md.direction = Vector3.left;
+                    obj.sp.flipX = true;
                 }
                 else
                 {
                     obj.gm.transform.position = left[GetIndex(ref last, left.Length)].position;
                     obj.md.direction = Vector3.right;
+                    obj.sp.flipX = false;
                 }
             }
         }

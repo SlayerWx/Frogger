@@ -18,7 +18,10 @@ public class PlayerMove : MonoBehaviour
     public Vector3 offsetPlatform;
     public Vector3 startPosition;
     public int lifes = 3;
+    public int startLifes = 3;
     public float restartLevelWait = 1.0f;
+    public static Action<int> OnLifeChange;
+    public bool inPause;
     void Start()
     {
         needCheckerAlive = false;
@@ -27,6 +30,8 @@ public class PlayerMove : MonoBehaviour
         dead = false;
         moving = false;
         startPosition = transform.position;
+        OnLifeChange?.Invoke(startLifes);
+        lifes = startLifes;
     }
 
     // Update is called once per frame
@@ -36,7 +41,7 @@ public class PlayerMove : MonoBehaviour
     }
     void PlayerInput()
     {
-        if (!moving && !dead && !needCheckerAlive)
+        if (!moving && !dead && !needCheckerAlive && !inPause)
         {
             if(safePlatform)
             {
@@ -95,8 +100,8 @@ public class PlayerMove : MonoBehaviour
     {
         if(inWaterFloor && !safePlatform)
         {
+            if(!dead)StartCoroutine(RestartForLife());
             dead = true;
-            StartCoroutine(RestartForLife());
         }
         needCheckerAlive = false;
     }
@@ -108,8 +113,8 @@ public class PlayerMove : MonoBehaviour
         }
         if(!inWaterFloor)
         {
+            if (!dead) StartCoroutine(RestartForLife());
             dead = true;
-            StartCoroutine(RestartForLife());
         }
     }
     private void OnTriggerExit2D(Collider2D collision)
@@ -122,7 +127,8 @@ public class PlayerMove : MonoBehaviour
     IEnumerator RestartForLife()
     {
         yield return new WaitForSeconds(restartLevelWait);
-        lifes++;
+        lifes--;
+        OnLifeChange?.Invoke(lifes);
         transform.position = startPosition;
         if(lifes > 0)dead = false;
     }
